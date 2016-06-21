@@ -106,6 +106,9 @@ var GridRow = React.createClass({
                   //html data attribute value representing column Display
                    html5TheadInfo = meta.displayName+": ";
               }
+              else{
+                  html5TheadInfo='';
+              }
               if (typeof meta.customComponent !== 'undefined' && meta.customComponent !== null) {
                 var customComponent = <meta.customComponent data={col[1]} rowData={dataView} metadata={meta}  />;
                 returnValue = <td onClick={this.handleClick} data-th={html5TheadInfo} className={meta.cssClassName} key={index} style={columnStyles}>{customComponent}</td>;
