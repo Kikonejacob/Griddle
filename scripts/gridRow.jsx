@@ -102,12 +102,14 @@ var GridRow = React.createClass({
             var html5TheadInfo = col[0]+': \u00a0 '; //by default the html5TheadInfo  will be the columun name.
 
             if (this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
+
               if ((meta.excludeHTMLDisplayNameData!==undefined)&&(meta.excludeHTMLDisplayNameData==false)) {
-                  //html data attribute value representing column Display
-                   html5TheadInfo = meta.displayName+": ";
+                  html5TheadInfo='';//instruction to set the data-th attribute to ""
+                 
               }
               else{
-                  html5TheadInfo='';
+                   //html data attribute value representing column Display
+                   html5TheadInfo = meta.displayName+": \u00a0";
               }
               if (typeof meta.customComponent !== 'undefined' && meta.customComponent !== null) {
                 var customComponent = <meta.customComponent data={col[1]} rowData={dataView} metadata={meta}  />;
