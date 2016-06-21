@@ -16,13 +16,34 @@ Use the `columns` property to set the default columns in a Griddle grid. Please 
 
 ###Column Metadata###
 
-The column meta data property is used to specify column properties that are not part of the result data object. For instance, if you want to specify a displayName that is different than the property name in the result data, the `columnMetadata` property is where this would be defined. 
+The column meta data property is used to specify column properties that are not part of the result data object. For instance, if you want to specify a displayName that is different than the property name in the result data, the `columnMetadata` property is where this would be defined.
 
 Griddle parses and evaluates the following columnMetadata object properties:
 
 <dl>
   <dt>columnName</dt>
   <dd><strong>string (required)</strong> - this is the name of the column as it appears in the results passed into Griddle.</dd>
+</dl>
+
+<dl>
+  <dt>sortable</dt>
+  <dd><strong>bool</strong> - Determines whether or not the user can sort this column (defaults to `true`, so specify `false` to disable sort)</dd>
+</dl>
+
+<dl>
+  <dt>customCompareFn</dt>
+  <dd><strong>function</strong></dd>
+  <dd><strong>with 1 argument</strong> specifies a function that defines the sort order of the column data. Passed to [_.sortBy](https://lodash.com/docs#sortBy) method, invoked with 1 argument.</dd>
+  <dd><strong>with 2 arguments</strong> specifies a function that defines the sort order of the column data. Passed to standard JS [sort](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/sort) method, invoked ith 2 arguments. Useful, for example, wih naturalSort(a, b) from [javascript-natural-sort](https://www.npmjs.com/package/javascript-natural-sort)</dd>
+</dl>
+
+<dl>
+  <dt>multiSort</dt>
+  <dd><strong>object</strong> - allows to specify multiple sorting when sorting current column. Specified columns will be sorted after current</dd>
+  ```multiSort: {
+      columns: ['name'],
+      orders: ['asc']
+    }```
 </dl>
 
 <dl>
@@ -41,6 +62,11 @@ Griddle parses and evaluates the following columnMetadata object properties:
 </dl>
 
 <dl>
+    <dt>titleStyles</dt>
+    <dd><strong>object</strong> - collection of styles applied to column header</dd>
+</dl>
+
+<dl>
   <dt>displayName</dt>
   <dd><strong>string</strong> - The display name for the column. This is used when the name in the column heading and settings should be different from the data passed in to the Griddle component.</dd>
 </dl>
@@ -48,16 +74,24 @@ Griddle parses and evaluates the following columnMetadata object properties:
   <dt>customComponent</dt>
   <dd><strong>React Component</strong> - The component that should be rendered instead of the standard column data. This component will still be rendered inside of a `TD` element. (more information below in the [Custom Columns section](#customColumns).)</dd>
 </dl>
+<dl>
+  <dt>customHeaderComponent</dt>
+  <dd><strong>React Component</strong> - The component that should be rendered instead of the standard header data. This component will still be rendered inside of a `TH` element. (more information below in the [Custom Columns section](#customColumns).)</dd>
+</dl>
+<dl>
+  <dt>customHeaderComponentProps</dt>
+  <dd><strong>object</strong> - An object containing additional properties that will be passed into the custom header component. (more information below in the [Custom Columns section](#customColumns).)</dd>
+</dl>
 
-However, you are also able to pass other properties in as columnMetadata. 
+However, you are also able to pass other properties in as columnMetadata.
 
 [columnMetadata can be accessed on the `metadata` property of a Custom Column component.](#custom-columns)
 
 #####Example:#####
 
-Assume we want to reverse the columns so name would be last, followed by followed by city, state, company, country and favorite number. Also we want the name column heading to read `Employee Name` instead of name. 
+Assume we want to reverse the columns so name would be last, followed by followed by city, state, company, country and favorite number. Also we want the name column heading to read `Employee Name` instead of name.
 
-Our metadata object would look something like 
+Our metadata object would look something like
 
 ```
   {
@@ -96,16 +130,17 @@ Our metadata object would look something like
     "order":  4,
     "locked": false,
     "visible": true,
-    "displayName": "Favorite Number"
+    "displayName": "Favorite Number",
+    "sortable": false
   }
 ```
 
-We would then load Griddle as follows: 
+We would then load Griddle as follows:
 
 ```
 React.render(
-  <Griddle results={fakeData} columnMetadata={exampleMetadata} showFilter={true} 
-    showSettings={true} columns={["name", "city", "state", "country"]}/>, 
+  <Griddle results={fakeData} columnMetadata={exampleMetadata} showFilter={true}
+    showSettings={true} columns={["name", "city", "state", "country"]}/>,
     document.getElementById('griddle-metadata')
 ```
 
@@ -172,7 +207,32 @@ var LinkComponent = React.createClass({
 });
 ```
 
-From there, we will set the customComponent value in the **name** columnMetadata object to this LinkComponent.
+Additionally, we want the city and state column headers to be highlighted a specific color and have a filter by column input. We can define a custom header component as:
+
+```
+var HeaderComponent = React.createClass({
+  textOnClick: function(e) {
+    e.stopPropagation();
+  },
+
+  filterText: function(e) {
+    this.props.filterByColumn(e.target.value, this.props.columnName)
+  },
+
+  render: function(){
+    return (
+      <span>
+        <div><strong style={{color: this.props.color}}>{this.props.displayName}</strong></div>
+        <input type='text' onChange={this.filterText} onClick={this.textOnClick} />
+      </span>
+    );
+  }
+});
+```
+
+<small>Please note: filterByColumn is a method that is passed as a prop to any customHeaderComponent.</small>
+
+From there, we will set the customComponent value in the **name** columnMetadata object to this LinkComponent. We're also going to update **state** and **city**'s `customHeaderComponent` and `customHeaderComponentProps`.
 
 ```
 var columnMeta = [
@@ -183,6 +243,18 @@ var columnMeta = [
   "locked": false,
   "visible": true,
   "customComponent": LinkComponent
+  },
+  {
+  ...
+  "columnName": "city",
+  "customHeaderComponent": HeaderComponent,
+  "customHeaderComponentProps": { color: 'red' }
+  },
+  {
+  ...
+  "columnName": "state",
+  "customHeaderComponent": HeaderComponent,
+  "customHeaderComponentProps": { color: 'blue' }
   },
   ...
 ];
@@ -196,6 +268,49 @@ React.render(<Griddle data={someData} columnMetadata={columnMeta} />,
 ```
 
 @@include('./customization/customColumn.html')
+
+<hr />
+
+###Custom sorting###
+
+#####Example:#####
+
+In this example we are going to sort `Employee Name` column by last name, followed by first name:
+
+```
+var exampleMetadata = [
+  {
+  "columnName": "id",
+  "order": 1,
+  "locked": false,
+  "visible": false,
+  "displayName": "ID"
+  },
+  {
+  "columnName": "name",
+  "order": 9,
+  "locked": false,
+  "visible": true,
+  "displayName": "Employee Name",
+  "compare": function(name) {
+      var a = name.split(" ");
+      return a[1] + " " + a[0];
+    }
+  },
+  ...
+]
+```
+
+Then, like in first example, but specify initialSort column:
+
+```
+React.render(
+  <Griddle results={fakeData} columnMetadata={exampleMetadata} showFilter={true}
+    showSettings={true} columns={["name", "city", "state", "country"]} initialSort="name"/>,
+    document.getElementById('griddle-metadata')
+```
+
+@@include('./customization/customSorting.html')
 
 <hr />
 
@@ -221,7 +336,7 @@ var rowMetadata = {
         return "default-row";
     }
 };
-	  
+
 return (
     <div className="griddle-container">
         <Griddle results={this.state.rows} rowMetadata={rowMetadata} />
@@ -326,6 +441,65 @@ var TestLineChart = React.createClass({
 
 <hr />
 
+###Custom Filtering and Filter Component###
+
+Griddle supports custom filtering and custom filter components. In order to use a custom filter function set the property `useCustomFilterer` to true and pass in a function to the  `customFilterer` property. To use a custom filter component set `useCustomFilterComponent` to true and pass a component to `customFilterComponent`.
+
+#####Example:#####
+
+This example shows how to make a custom filter component with a custom filter function that does a case-insensitive search through the items. The component must call `this.props.changeFilter(val)` when the filter should be updated. In the example below we pass a string but any variable type can be used as long as the filter function is expecting it, for example an advanced query could be passed in using an object. The filter function signature takes the items to be filtered and the query to filter them by.
+
+```javascript
+      squish = require('object-squish');
+
+  var customFilterFunction = function(items, query) {
+    return _.filter(items, (item) => {
+      var flat = squish(item);
+
+      for (var key in flat) {
+        if (String(flat[key]).toLowerCase().indexOf(query.toLowerCase()) >= 0) return true;
+      };
+      return false;
+    });
+  };
+
+  var customFilterComponent = React.createClass({
+    getDefaultProps: function() {
+      return {
+        "query": ""
+      }
+    },
+
+    searchChange: function(event) {
+      this.props.query = event.target.value;
+      this.props.changeFilter(this.props.query);
+    },
+
+    render: function() {
+      return (
+        <div className="filter-container">
+          <input type="text"
+                 name="search"
+                 placeholder="Search..."
+                 onChange={this.searchChange} />
+        </div>
+      )
+    }
+  });
+```
+
+Then initialize Griddle:
+
+```
+React.render(
+  <Griddle results={fakeData} showFilter={true}
+  useCustomFilterer={true} customFilterer={customFilterFunction}
+  useCustomFilterComponent={true} customFilterComponent={customFilterComponent}/>,
+  document.getElementById('griddle-metadata')
+```
+
+<hr />
+
 ###Custom Paging Component###
 
 If you want to customize the paging component, just set the property 'useCustomPagerComponent' to true and pass in another component as property named 'customPagerComponent'. The example component below shows 11 buttons (5 previous, current, 5 next):
@@ -338,6 +512,11 @@ If you want to customize the paging component, just set the property 'useCustomP
 <dl>
   <dt>customPagerComponent</dt>
   <dd><strong>object</strong> - The custom pagination component. default: {}</dd>
+</dl>
+
+<dl>
+  <dt>customPagerComponentOptions</dt>
+  <dd><strong>object</strong> - Any options to be passed to the custom pagination component. default: {}</dd>
 </dl>
 
 #####Example#####
@@ -397,7 +576,7 @@ var OtherPager = React.createClass({
 Then initialize your component as follows:
 
 ```
-<Griddle results={fakeData} tableClassName="table" useCustomRowComponent="true" 
+<Griddle results={fakeData} tableClassName="table" useCustomRowComponent="true"
   customRowComponent={OtherComponent} useCustomPagerComponent="true" customPagerComponent={OtherPager} />
 ```
 

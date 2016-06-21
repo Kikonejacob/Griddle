@@ -1,48 +1,63 @@
 /*
  See License / Disclaimer https://raw.githubusercontent.com/DynamicTyped/Griddle/master/LICENSE
  */
+'use strict';
+
+var _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+                target[key] = source[key];
+            }
+        }
+    }return target;
+};
+
 var React = require('react');
 var ColumnProperties = require('./columnProperties.js');
 var assign = require('lodash/assign');
 
 var DefaultHeaderComponent = React.createClass({
-    render: function () {
-        return (<span>{this.props.displayName}</span>);
+    displayName: 'DefaultHeaderComponent',
+
+    render: function render() {
+        return React.createElement('span', null, this.props.displayName);
     }
 });
 
 var GridTitle = React.createClass({
-    getDefaultProps: function () {
+    displayName: 'GridTitle',
+
+    getDefaultProps: function getDefaultProps() {
         return {
             "columnSettings": null,
-            "filterByColumn": function () {
-            },
+            "filterByColumn": function filterByColumn() {},
             "rowSettings": null,
             "sortSettings": null,
             "multipleSelectionSettings": null,
             "headerStyle": null,
             "useGriddleStyles": true,
             "useGriddleIcons": true,
-            "headerStyles": {},
-        }
+            "headerStyles": {}
+        };
     },
-    componentWillMount: function () {
+    componentWillMount: function componentWillMount() {
         this.verifyProps();
     },
-    sort: function (column) {
+    sort: function sort(column) {
         var that = this;
         return function (event) {
             that.props.sortSettings.changeSort(column);
         };
     },
-    toggleSelectAll: function (event) {
+    toggleSelectAll: function toggleSelectAll(event) {
         this.props.multipleSelectionSettings.toggleSelectAll();
     },
-    handleSelectionChange: function (event) {
+    handleSelectionChange: function handleSelectionChange(event) {
         //hack to get around warning message that's not helpful in this case
         return;
     },
-    verifyProps: function () {
+    verifyProps: function verifyProps() {
         if (this.props.columnSettings === null) {
             console.error("gridTitle: The columnSettings prop is null and it shouldn't be");
         }
@@ -51,13 +66,13 @@ var GridTitle = React.createClass({
             console.error("gridTitle: The sortSettings prop is null and it shouldn't be");
         }
     },
-    render: function () {
+    render: function render() {
         this.verifyProps();
         var that = this;
-        let titleStyles = {};
+        var titleStyles = {};
 
         var nodes = this.props.columnSettings.getColumns().map(function (col, index) {
-            let defaultTitleStyles = {};
+            var defaultTitleStyles = {};
             var columnSort = "";
             var columnIsSortable = that.props.columnSettings.getMetadataColumnProperty(col, "sortable", true);
             var sortComponent = columnIsSortable ? that.props.sortSettings.sortDefaultComponent : null;
@@ -75,7 +90,7 @@ var GridTitle = React.createClass({
             var HeaderComponent = that.props.columnSettings.getMetadataColumnProperty(col, "customHeaderComponent", DefaultHeaderComponent);
             var headerProps = that.props.columnSettings.getMetadataColumnProperty(col, "customHeaderComponentProps", {});
 
-            columnSort = meta == null ? columnSort : (columnSort && (columnSort + " ") || columnSort) + that.props.columnSettings.getMetadataColumnProperty(col, "cssClassName", "");
+            columnSort = meta == null ? columnSort : (columnSort && columnSort + " " || columnSort) + that.props.columnSettings.getMetadataColumnProperty(col, "cssClassName", "");
 
             if (that.props.useGriddleStyles) {
                 defaultTitleStyles = {
@@ -85,38 +100,26 @@ var GridTitle = React.createClass({
                     color: "#222",
                     padding: "5px",
                     cursor: columnIsSortable ? "pointer" : "default"
-                }
+                };
             }
             titleStyles = meta && meta.titleStyles ? assign({}, defaultTitleStyles, meta.titleStyles) : assign({}, defaultTitleStyles);
-            return (
-                <th onClick={columnIsSortable ? that.sort(col) : null} data-title={col} className={columnSort} key={col}
-                    style={titleStyles}>
-                    <HeaderComponent columnName={col} displayName={displayName}
-                                     filterByColumn={that.props.filterByColumn} {...headerProps}/>
-                    {sortComponent}
-                </th>);
+            return React.createElement('th', { onClick: columnIsSortable ? that.sort(col) : null, 'data-title': col, className: columnSort, key: col,
+                style: titleStyles }, React.createElement(HeaderComponent, _extends({ columnName: col, displayName: displayName,
+                filterByColumn: that.props.filterByColumn }, headerProps)), sortComponent);
         });
 
         if (nodes && this.props.multipleSelectionSettings.isMultipleSelection) {
-            nodes.unshift(<th key="selection" onClick={this.toggleSelectAll} style={titleStyles}>
-                <input type="checkbox"
-                       checked={this.props.multipleSelectionSettings.getIsSelectAllChecked()}
-                       onChange={this.handleSelectionChange}/>
-            </th>);
+            nodes.unshift(React.createElement('th', { key: 'selection', onClick: this.toggleSelectAll, style: titleStyles }, React.createElement('input', { type: 'checkbox',
+                checked: this.props.multipleSelectionSettings.getIsSelectAllChecked(),
+                onChange: this.handleSelectionChange })));
         }
 
         //Get the row from the row settings.
         var className = that.props.rowSettings && that.props.rowSettings.getHeaderRowMetadataClass() || null;
 
-        return (
-            <thead>
-            <tr
-                className={className}
-                style={this.props.headerStyles}>
-                {nodes}
-            </tr>
-            </thead>
-        );
+        return React.createElement('thead', null, React.createElement('tr', {
+            className: className,
+            style: this.props.headerStyles }, nodes));
     }
 });
 

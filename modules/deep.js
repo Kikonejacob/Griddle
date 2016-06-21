@@ -1,3 +1,5 @@
+'use strict';
+
 var forEach = require('lodash/forEach');
 var isObject = require('lodash/isObject');
 var isArray = require('lodash/isArray');
@@ -30,15 +32,16 @@ function keysFromPath(path) {
 // Gets the value at any depth in a nested object based on the
 // path described by the keys given. Keys may be given as an array
 // or as a dot-separated string.
-function getPath (obj, ks) {
+function getPath(obj, ks) {
   if (typeof ks == "string") {
-    if(obj[ks] !== undefined) {
+    if (obj[ks] !== undefined) {
       return obj[ks];
     }
     ks = keysFromPath(ks);
   }
 
-  var i = -1, length = ks.length;
+  var i = -1,
+      length = ks.length;
 
   // If the obj is null or undefined we have to break as
   // a TypeError will result trying to access any property
@@ -52,9 +55,13 @@ function getPath (obj, ks) {
 
 // Based on the origin underscore _.pick function
 // Credit: https://github.com/jashkenas/underscore/blob/master/underscore.js
-function powerPick (object, keys) {
-  var result = {}, obj = object, iteratee;
-  iteratee = function(key, obj) { return key in obj; };
+function powerPick(object, keys) {
+  var result = {},
+      obj = object,
+      iteratee;
+  iteratee = function (key, obj) {
+    return key in obj;
+  };
 
   obj = Object(obj);
 
@@ -84,13 +91,13 @@ function powerPick (object, keys) {
 //  "b",
 //  "c"
 // ]
-function getKeys (obj, prefix) {
+function getKeys(obj, prefix) {
   var keys = [];
 
-  forEach( obj, function(value, key) {
+  forEach(obj, function (value, key) {
     var fullKey = prefix ? prefix + "." + key : key;
-    if(isObject(value) && !isArray(value) && !isFunction(value)) {
-      keys = keys.concat( getKeys(value, fullKey) );
+    if (isObject(value) && !isArray(value) && !isFunction(value)) {
+      keys = keys.concat(getKeys(value, fullKey));
     } else {
       keys.push(fullKey);
     }
