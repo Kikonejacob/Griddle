@@ -7238,7 +7238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var html5TheadInfo = col[0] + ':   '; //by default the html5TheadInfo  will be the columun name.
 
 	            if (_this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
-	                if (meta.excludeHTMLDisplayNameData !== undefined && meta.includeHTMLDisplayNameData == false) {
+	                if (meta.excludeHTMLDisplayNameData !== undefined && meta.excludeHTMLDisplayNameData == false) {
 	                    //html data attribute value representing column Display
 	                    html5TheadInfo = meta.displayName + ": ";
 	                } else {
