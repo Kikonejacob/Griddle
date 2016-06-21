@@ -102,7 +102,7 @@ var GridRow = React.createClass({
             var html5TheadInfo = col[0]+': \u00a0 '; //by default the html5TheadInfo  will be the columun name.
 
             if (this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
-              if ((meta.includeHTMLDisplayNameData!==undefined)&&(meta.includeHTMLDisplayNameData==true)) {
+              if ((meta.excludeHTMLDisplayNameData!==undefined)&&(meta.includeHTMLDisplayNameData==false)) {
                   //html data attribute value representing column Display
                    html5TheadInfo = meta.displayName+": ";
               }
