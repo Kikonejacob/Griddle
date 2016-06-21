@@ -102,22 +102,22 @@ var GridRow = React.createClass({
         columnStyles = assign(columnStyles, { paddingLeft: 10 });
       }
 
+      var html5TheadInfo = col[0] + ':   '; //by default the html5TheadInfo  will be the columun name.
+
       if (_this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
-        var html5THeadInfo = '';
-        if (meta.IncludehtmlDisplayNameData !== undefined && meta.IncludehtmlDisplayNameData == true) {
+        if (meta.includeHTMLDisplayNameData !== undefined && meta.includeHTMLDisplayNameData == true) {
           //html data attribute value representing column Display
-          html5THeadInfo = meta.displayName;
-          console.log(meta);
+          html5TheadInfo = meta.displayName + ": ";
         }
         if (typeof meta.customComponent !== 'undefined' && meta.customComponent !== null) {
           var customComponent = React.createElement(meta.customComponent, { data: col[1], rowData: dataView, metadata: meta });
-          returnValue = React.createElement('td', { onClick: _this.handleClick, 'data-th': html5THeadInfo, className: meta.cssClassName, key: index, style: columnStyles }, customComponent);
+          returnValue = React.createElement('td', { onClick: _this.handleClick, 'data-th': html5TheadInfo, className: meta.cssClassName, key: index, style: columnStyles }, customComponent);
         } else {
-          returnValue = React.createElement('td', { onClick: _this.handleClick, 'data-th': html5THeadInfo, className: meta.cssClassName, key: index, style: columnStyles }, firstColAppend, col[1]);
+          returnValue = React.createElement('td', { onClick: _this.handleClick, 'data-th': html5TheadInfo, className: meta.cssClassName, key: index, style: columnStyles }, firstColAppend, col[1]);
         }
       }
 
-      return returnValue || React.createElement('td', { onClick: _this.handleClick, key: index, style: columnStyles }, firstColAppend, col[1]);
+      return returnValue || React.createElement('td', { 'data-th': html5TheadInfo, onClick: _this.handleClick, key: index, style: columnStyles }, firstColAppend, col[1]);
     });
 
     if (nodes && this.props.multipleSelectionSettings && this.props.multipleSelectionSettings.isMultipleSelection) {

@@ -99,22 +99,22 @@ var GridRow = React.createClass({
               columnStyles = assign(columnStyles, {paddingLeft:10})
             }
 
+            var html5TheadInfo = col[0]+': \u00a0 '; //by default the html5TheadInfo  will be the columun name.
+
             if (this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
-              var html5THeadInfo='';
-              if ((meta.IncludehtmlDisplayNameData!==undefined)&&(meta.IncludehtmlDisplayNameData==true)) {
+              if ((meta.includeHTMLDisplayNameData!==undefined)&&(meta.includeHTMLDisplayNameData==true)) {
                   //html data attribute value representing column Display
-                   html5THeadInfo = meta.displayName;
-                   console.log(meta);
+                   html5TheadInfo = meta.displayName+": ";
               }
               if (typeof meta.customComponent !== 'undefined' && meta.customComponent !== null) {
                 var customComponent = <meta.customComponent data={col[1]} rowData={dataView} metadata={meta}  />;
-                returnValue = <td onClick={this.handleClick} data-th={html5THeadInfo} className={meta.cssClassName} key={index} style={columnStyles}>{customComponent}</td>;
+                returnValue = <td onClick={this.handleClick} data-th={html5TheadInfo} className={meta.cssClassName} key={index} style={columnStyles}>{customComponent}</td>;
               } else {
-                returnValue = <td onClick={this.handleClick} data-th={html5THeadInfo} className={meta.cssClassName} key={index} style={columnStyles}>{firstColAppend}{col[1]}</td>;
+                returnValue = <td onClick={this.handleClick} data-th={html5TheadInfo} className={meta.cssClassName} key={index} style={columnStyles}>{firstColAppend}{col[1]}</td>;
               }
             }
 
-            return returnValue || (<td onClick={this.handleClick} key={index} style={columnStyles}>{firstColAppend}{col[1]}</td>);
+            return returnValue || (<td data-th={html5TheadInfo}  onClick={this.handleClick}  key={index} style={columnStyles}>{firstColAppend}{col[1]}</td>);
         });
 
 		if(nodes && this.props.multipleSelectionSettings && this.props.multipleSelectionSettings.isMultipleSelection) {
