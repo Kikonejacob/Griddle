@@ -101,10 +101,14 @@ var GridRow = React.createClass({
 
             if (this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
               if (typeof meta.customComponent !== 'undefined' && meta.customComponent !== null) {
-                var customComponent = <meta.customComponent data={col[1]} rowData={dataView} metadata={meta} />;
-                returnValue = <td onClick={this.handleClick} className={meta.cssClassName} key={index} style={columnStyles}>{customComponent}</td>;
+                var html5HeaderInfo='';
+                if (meta.IncludehtmlColumnHeaderData){
+                   var html5TableaHeaderInfo=meta.DisplayName;
+                }
+                var customComponent = <meta.customComponent data={col[1]} rowData={dataView} metadata={meta}  />;
+                returnValue = <td onClick={this.handleClick} data-th={html5HeaderInfo} className={meta.cssClassName} key={index} style={columnStyles}>{customComponent}</td>;
               } else {
-                returnValue = <td onClick={this.handleClick} className={meta.cssClassName} key={index} style={columnStyles}>{firstColAppend}{col[1]}</td>;
+                returnValue = <td onClick={this.handleClick} data-th={html5HeaderInfo} className={meta.cssClassName} key={index} style={columnStyles}>{firstColAppend}{col[1]}</td>;
               }
             }
 
