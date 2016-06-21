@@ -528,7 +528,7 @@ var Griddle = React.createClass({
                             return customCompareFn(_get(a, column), _get(b, column));
                         });
 
-                        if (sortDirection === 'desc') {
+                        if (this.state.sortDirection === 'desc') {
                             data.reverse();
                         }
                     } else if (customCompareFn.length === 1) {

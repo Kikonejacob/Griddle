@@ -102,7 +102,8 @@ var GridRow = React.createClass({
             if (this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
               if (typeof meta.customComponent !== 'undefined' && meta.customComponent !== null) {
                 var html5HeaderInfo='';
-                if (meta.IncludehtmlColumnHeaderData){
+                if (meta.IncludehtmlDisplayNameData){
+                    //html data attribute value representing column Display
                    var html5TableaHeaderInfo=meta.DisplayName;
                 }
                 var customComponent = <meta.customComponent data={col[1]} rowData={dataView} metadata={meta}  />;
