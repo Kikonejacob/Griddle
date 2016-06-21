@@ -103,16 +103,17 @@ var GridRow = React.createClass({
       }
 
       if (_this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
+        var html5THeadInfo = '';
+        if (meta.IncludehtmlDisplayNameData !== undefined && meta.IncludehtmlDisplayNameData == true) {
+          //html data attribute value representing column Display
+          html5THeadInfo = meta.displayName;
+          console.log(meta);
+        }
         if (typeof meta.customComponent !== 'undefined' && meta.customComponent !== null) {
-          var html5HeaderInfo = '';
-          if (meta.IncludehtmlDisplayNameData) {
-            //html data attribute value representing column Display
-            var html5TableaHeaderInfo = meta.DisplayName;
-          }
           var customComponent = React.createElement(meta.customComponent, { data: col[1], rowData: dataView, metadata: meta });
-          returnValue = React.createElement('td', { onClick: _this.handleClick, 'data-th': html5HeaderInfo, className: meta.cssClassName, key: index, style: columnStyles }, customComponent);
+          returnValue = React.createElement('td', { onClick: _this.handleClick, 'data-th': html5THeadInfo, className: meta.cssClassName, key: index, style: columnStyles }, customComponent);
         } else {
-          returnValue = React.createElement('td', { onClick: _this.handleClick, 'data-th': html5HeaderInfo, className: meta.cssClassName, key: index, style: columnStyles }, firstColAppend, col[1]);
+          returnValue = React.createElement('td', { onClick: _this.handleClick, 'data-th': html5THeadInfo, className: meta.cssClassName, key: index, style: columnStyles }, firstColAppend, col[1]);
         }
       }
 

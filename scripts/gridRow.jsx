@@ -100,16 +100,17 @@ var GridRow = React.createClass({
             }
 
             if (this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
+              var html5THeadInfo='';
+              if ((meta.IncludehtmlDisplayNameData!==undefined)&&(meta.IncludehtmlDisplayNameData==true)) {
+                  //html data attribute value representing column Display
+                   html5THeadInfo = meta.displayName;
+                   console.log(meta);
+              }
               if (typeof meta.customComponent !== 'undefined' && meta.customComponent !== null) {
-                var html5HeaderInfo='';
-                if (meta.IncludehtmlDisplayNameData){
-                    //html data attribute value representing column Display
-                   var html5TableaHeaderInfo=meta.DisplayName;
-                }
                 var customComponent = <meta.customComponent data={col[1]} rowData={dataView} metadata={meta}  />;
-                returnValue = <td onClick={this.handleClick} data-th={html5HeaderInfo} className={meta.cssClassName} key={index} style={columnStyles}>{customComponent}</td>;
+                returnValue = <td onClick={this.handleClick} data-th={html5THeadInfo} className={meta.cssClassName} key={index} style={columnStyles}>{customComponent}</td>;
               } else {
-                returnValue = <td onClick={this.handleClick} data-th={html5HeaderInfo} className={meta.cssClassName} key={index} style={columnStyles}>{firstColAppend}{col[1]}</td>;
+                returnValue = <td onClick={this.handleClick} data-th={html5THeadInfo} className={meta.cssClassName} key={index} style={columnStyles}>{firstColAppend}{col[1]}</td>;
               }
             }
 
