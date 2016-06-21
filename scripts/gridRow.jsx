@@ -103,7 +103,7 @@ var GridRow = React.createClass({
 
             if (this.props.columnSettings.hasColumnMetadata() && typeof meta !== 'undefined' && meta !== null) {
 
-              if ((meta.excludeHTMLDisplayNameData!==undefined)&&(meta.excludeHTMLDisplayNameData==false)) {
+              if ((meta.excludeHTMLDisplayNameData!==undefined)&&(meta.excludeHTMLDisplayNameData==true)) {
                   html5TheadInfo='';//instruction to set the data-th attribute to ""
                  
               }
